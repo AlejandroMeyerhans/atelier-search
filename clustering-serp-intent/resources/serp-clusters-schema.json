@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SERP Clusters",
+  "description": "Keywords clustered by SERP overlap into page-level groups with heading hierarchy. Output of Skill 2 in the topical mapping pipeline.",
+  "type": "object",
+  "required": ["metadata", "page_clusters"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": ["site", "country", "analysis_date", "serp_source", "overlap_threshold", "total_page_clusters"],
+      "properties": {
+        "site": { "type": "string" },
+        "country": { "type": "string", "pattern": "^[A-Z]{2}$" },
+        "analysis_date": { "type": "string", "format": "date" },
+        "serp_source": { "type": "string", "enum": ["ahrefs", "dataforseo", "mixed"] },
+        "overlap_threshold": { "type": "number", "minimum": 0, "maximum": 1 },
+        "tier1_keywords_analyzed": { "type": "integer" },
+        "tier2_keywords_inferred": { "type": "integer" },
+        "total_page_clusters": { "type": "integer" }
+      }
+    },
+    "page_clusters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["cluster_id", "h1_keyword", "total_cluster_volume", "dominant_intent"],
+        "properties": {
+          "cluster_id": { "type": "string", "description": "URL-slug-style identifier" },
+          "h1_keyword": {
+            "type": "object",
+            "required": ["keyword", "volume"],
+            "properties": {
+              "keyword": { "type": "string" },
+              "volume": { "type": "integer" },
+              "kd": { "type": ["integer", "null"] },
+              "dominant_intent": { "type": "string" }
+            }
+          },
+          "h2_keywords": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "keyword": { "type": "string" },
+                "volume": { "type": "integer" },
+                "kd": { "type": ["integer", "null"] },
+                "heading_text": { "type": "string" }
+              }
+            }
+          },
+          "h3_keywords": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "keyword": { "type": "string" },
+                "volume": { "type": "integer" },
+                "kd": { "type": ["integer", "null"] },
+                "parent_h2": { "type": "string" },
+                "heading_text": { "type": "string" }
+              }
+            }
+          },
+          "total_cluster_volume": { "type": "integer" },
+          "dominant_intent": { "type": "string", "enum": ["transactional", "commercial", "navigational", "informational"] },
+          "serp_overlap_score": { "type": "number", "minimum": 0, "maximum": 1 },
+          "existing_url": { "type": ["string", "null"] },
+          "recommended_url": { "type": "string" },
+          "keyword_count": { "type": "integer" },
+          "intent_coherence": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      }
+    },
+    "orphan_keywords": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "keyword": { "type": "string" },
+          "volume": { "type": "integer" },
+          "reason": { "type": "string" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Keyword Universe",
+  "description": "Complete keyword universe for a website, extracted via Ahrefs MCP. Output of Skill 1 in the topical mapping pipeline.",
+  "type": "object",
+  "required": ["metadata", "keywords", "existing_pages"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": ["site", "country", "extraction_date", "total_keywords"],
+      "properties": {
+        "site": { "type": "string", "description": "Target domain" },
+        "country": { "type": "string", "pattern": "^[A-Z]{2}$", "description": "ISO 3166-1 alpha-2 country code" },
+        "extraction_date": { "type": "string", "format": "date" },
+        "total_keywords": { "type": "integer", "minimum": 0 },
+        "comparison_date": { "type": "string", "format": "date", "description": "Optional pre-update date for comparison analysis" },
+        "sources": {
+          "type": "object",
+          "properties": {
+            "organic_keywords": { "type": "integer" },
+            "competitor_keywords": { "type": "integer" },
+            "matching_terms": { "type": "integer" },
+            "related_terms": { "type": "integer" }
+          }
+        },
+        "competitors_analyzed": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "keywords": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["keyword", "volume", "dominant_intent", "intents", "sources"],
+        "properties": {
+          "keyword": { "type": "string" },
+          "volume": { "type": ["integer", "null"], "minimum": 0 },
+          "kd": { "type": ["integer", "null"], "minimum": 0, "maximum": 100, "description": "Keyword difficulty 0-100" },
+          "cpc_cents": { "type": ["integer", "null"], "minimum": 0, "description": "CPC in USD cents" },
+          "dominant_intent": {
+            "type": "string",
+            "enum": ["transactional", "commercial", "navigational", "informational"]
+          },
+          "intents": {
+            "type": "object",
+            "properties": {
+              "commercial": { "type": "boolean" },
+              "informational": { "type": "boolean" },
+              "navigational": { "type": "boolean" },
+              "transactional": { "type": "boolean" },
+              "branded": { "type": "boolean" },
+              "local": { "type": "boolean" }
+            }
+          },
+          "current_position": { "type": ["integer", "null"], "description": "Current ranking position (null if not ranking)" },
+          "previous_position": { "type": ["integer", "null"], "description": "Position at comparison date" },
+          "current_url": { "type": ["string", "null"], "description": "URL path currently ranking" },
+          "traffic": { "type": ["integer", "null"], "minimum": 0 },
+          "previous_traffic": { "type": ["integer", "null"], "minimum": 0 },
+          "serp_features": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "position_kind": { "type": ["string", "null"], "description": "organic, snippet, ai_overview, etc." },
+          "sources": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Where this keyword was discovered: organic-keywords, competitor:domain.com, matching-terms, related-terms"
+          }
+        }
+      }
+    },
+    "existing_pages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["url"],
+        "properties": {
+          "url": { "type": "string" },
+          "keywords_count": { "type": "integer", "minimum": 0 },
+          "total_traffic": { "type": "integer", "minimum": 0 },
+          "top_keyword": { "type": "string" },
+          "top_keyword_volume": { "type": "integer", "minimum": 0 }
+        }
+      }
+    }
+  }
+}

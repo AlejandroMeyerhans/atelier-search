@@ -1,0 +1,143 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Site Architecture",
+  "description": "Complete internal linking architecture with virtual silo, physical silo, and content calendar. Output of Skill 4 in the topical mapping pipeline.",
+  "type": "object",
+  "required": ["metadata", "silos", "content_calendar", "linking_rules"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": ["site", "core_topic"],
+      "properties": {
+        "site": { "type": "string" },
+        "core_topic": { "type": "string" },
+        "architecture_date": { "type": "string", "format": "date" },
+        "total_silos": { "type": "integer" },
+        "total_pages": { "type": "integer" },
+        "total_internal_links": { "type": "integer" },
+        "url_structure": { "type": "string", "enum": ["physical_and_virtual", "virtual_only"] }
+      }
+    },
+    "silos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["silo_name", "silo_id", "hub", "spokes"],
+        "properties": {
+          "silo_name": { "type": "string" },
+          "silo_id": { "type": "string" },
+          "hub": {
+            "type": "object",
+            "required": ["url", "h1"],
+            "properties": {
+              "url": { "type": "string" },
+              "h1": { "type": "string" },
+              "status": { "type": "string" },
+              "links_to_spokes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "target_url": { "type": "string" },
+                    "anchor": { "type": "string" }
+                  }
+                }
+              },
+              "hub_bridges": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "target_hub": { "type": "string" },
+                    "anchor": { "type": "string" },
+                    "rationale": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "spokes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["url", "h1"],
+              "properties": {
+                "url": { "type": "string" },
+                "h1": { "type": "string" },
+                "status": { "type": "string" },
+                "old_url": { "type": ["string", "null"] },
+                "redirect_needed": { "type": "boolean" },
+                "links": {
+                  "type": "object",
+                  "properties": {
+                    "to_hub": {
+                      "type": "object",
+                      "properties": {
+                        "anchor": { "type": "string" },
+                        "placement": { "type": "string" }
+                      }
+                    },
+                    "daisy_chain_to": {
+                      "type": "object",
+                      "properties": {
+                        "url": { "type": "string" },
+                        "anchor": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "daisy_chain_order": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "content_calendar": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["week", "actions"],
+        "properties": {
+          "week": { "type": "integer" },
+          "actions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "action": { "type": "string", "enum": ["create", "rebuild", "redirect", "add_links", "prune"] },
+                "url": { "type": "string" },
+                "h1": { "type": "string" },
+                "rationale": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "linking_rules": {
+      "type": "object",
+      "properties": {
+        "spoke_to_hub": { "type": "string" },
+        "hub_to_spokes": { "type": "string" },
+        "spoke_to_spoke_same_silo": { "type": "string" },
+        "spoke_to_spoke_cross_silo": { "type": "string" },
+        "hub_to_hub": { "type": "string" },
+        "anchor_text": { "type": "string" },
+        "nav_footer_links": { "type": "string" }
+      }
+    },
+    "redirects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "from": { "type": "string" },
+          "to": { "type": "string" },
+          "type": { "type": "string", "enum": ["301", "302"] },
+          "reason": { "type": "string" }
+        }
+      }
+    }
+  }
+}
